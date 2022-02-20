@@ -1,0 +1,27 @@
+---
+
+docker_version: "{{ docker_default_version }}"
+containerd.io_version: "{{ containerd.io_version }}"
+
+docker_service: docker.service
+containerd_service: containerd.service
+
+docker_group: docker
+
+docker_pkgs:
+  - docker-ce
+  - docker-ce-cli
+
+other_pkgs:
+  - containerd.io-1.4.9
+
+utils:
+  - python3-pip
+  - wget
+  - telnet
+  - tcpdump
+  - net-tools
+  - nmap
+
+pip_packages:
+  - docker

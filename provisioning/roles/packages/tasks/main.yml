@@ -1,0 +1,11 @@
+
+---
+
+- name: Install utils packages
+  include_tasks: utils.yml
+
+- name: Install docker
+  include_tasks: docker.yml
+
+- name: Systemd actions
+  meta: flush_handlers

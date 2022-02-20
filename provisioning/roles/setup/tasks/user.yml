@@ -1,0 +1,61 @@
+---
+
+- name: Create authentication keypair for {{ lab_user }} user
+  local_action:
+    module: openssh_keypair
+    path: "{{ keypair_dir }}/userkey"
+    size: 2048
+  become: no
+
+- name: Create {{ lab_group }} group
+  group:
+    name: "{{ lab_group }}"
+    system: yes
+
+- name: Create {{ lab_user }} user
+  user:
+    name: "{{ lab_user }}"
+    groups:
+      - "{{ lab_group }}"
+    home: "{{ lab_user_home }}"
+    shell: /bin/bash
+    uid: "{{ lab_user_uid }}"
+    append: yes
+    system: yes
+
+- name: Set {{ lab_user }}'s authorized key
+  ansible.posix.authorized_key:
+    user: "{{ lab_user }}"
+    state: present
+    key: "{{ lookup('file', 'keys/userkey.pub') }}"
+
+- name: Disable su group requirement
+  replace:
+    path: /etc/pam.d/su
+    regexp: '^account(\s*)required(\s*)(.*)user(\s*)notin(.*)$'
+    replace: '#account\1required\2\3user\4notin\5$'
+    backup: yes
+
+- name: Add {{ lab_group }} group to sudoers without password
+  template:
+    src: sudoers
+    dest: "/etc/sudoers.d/{{ lab_group }}"
+    owner: root
+    group: root
+    mode: 0440
+
+- name: "Add {{ lab_user }}'s profile"
+  lineinfile:
+    line: "[[ -r ~/.profile ]] && . ~/.profile"
+    path: "{{ lab_user_home }}/.bash_profile"
+    create: yes
+    owner: "{{ lab_user }}"
+    group: "{{ lab_group }}"
+    mode: 0644
+
+- name: Set {{ lab_user }}'s profile
+  template:
+    src: profile
+    dest: "{{ lab_user_home }}/.profile"
+    owner: "{{ lab_user }}"
+    group: "{{ lab_group }}"

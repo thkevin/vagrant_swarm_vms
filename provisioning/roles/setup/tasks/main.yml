@@ -1,0 +1,24 @@
+---
+
+- name: Retrieve network facts for each server
+  setup:
+    gather_subset: network
+  delegate_to: "{{ item }}"
+  delegate_facts: yes
+  loop: "{{ groups.all }}"
+  run_once: yes
+
+- name: Add all cluster nodes to /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    regex: "^{{ hostvars[item].ansible_facts.eth1.ipv4.address }}"
+    line: "{{ hostvars[item].ansible_facts.eth1.ipv4.address }}\t{{ hostvars[item].ansible_hostname }}"
+    state: present
+  loop: "{{ groups.all | list }}"
+
+- name: Upgrade linux kernel to latest LTS if version lower than 4
+  include_tasks: upgrade_kernel.yml
+  when: (ansible_kernel | regex_replace('^((\d+\.*)+).*', '\\1')) is version('4', 'lt')
+
+- name: Setup lab user
+  include_tasks: user.yml

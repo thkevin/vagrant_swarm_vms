@@ -1,0 +1,27 @@
+---
+
+- name: Add ELRepo
+  dnf:
+    name: elrepo-release
+    state: latest
+
+- name: Install latest long term support
+  dnf:
+    name: kernel-lt
+    state: latest
+    enablerepo: elrepo-kernel
+  notify:
+    - Reboot server
+
+- name: Set grub to reboot with latest kernel
+  replace:
+    path: /etc/default/grub
+    regexp: '^GRUB_DEFAULT=(.*)$'
+    replace: 'GRUB_DEFAULT=0'
+    backup: yes
+
+- name: Remake grub config
+  command: grub2-mkconfig -o /boot/grub2/grub.cfg
+
+- name: Flush handlers
+  meta: flush_handlers

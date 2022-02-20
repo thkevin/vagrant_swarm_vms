@@ -1,0 +1,21 @@
+---
+
+- name: Daemon reload
+  systemd:
+    daemon_reload: yes
+
+- name: Enable docker service
+  service:
+    name: "{{ docker_service }}"
+    enabled: yes
+
+- name: Start docker service
+  service:
+    name: "{{ docker_service }}"
+    state: started
+
+
+- name: Start containerd service
+  service:
+    name: "{{ containerd_service }}"
+    state: started

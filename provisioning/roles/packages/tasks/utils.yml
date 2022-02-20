@@ -1,0 +1,10 @@
+---
+
+- name: Install utils packages
+  dnf:
+    name: "{{ utils }}"
+    state: present
+
+- name: Install python docker library
+  pip:
+    name: "{{ pip_packages }}"

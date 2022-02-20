@@ -1,0 +1,26 @@
+---
+
+- name: Set up the stable docker repository
+  copy:
+    src: docker-ce.repo
+    dest: "{{ yum_repos_dir }}/docker-ce.repo"
+
+- name: Install docker packages
+  dnf:
+    name: "{{ specific_packages }}"
+  vars:
+    specific_packages: "{{ (docker_pkgs | map('regex_replace', '$', '-' + docker_version)) + other_pkgs }}"
+  notify:
+    - Enable docker service
+    - Start docker service
+    - Start containerd service
+
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Add {{ lab_user }} to docker group
+  user:
+    name: "{{ lab_user }}"
+    groups:
+      - "{{ docker_group }}"
+    append: yes

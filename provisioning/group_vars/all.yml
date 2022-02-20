@@ -1,0 +1,8 @@
+---
+
+lab_user: "{{ lab_user | default('labdocker')}}"
+lab_group: "{{ lab_group | default('labdocker')}}"
+
+lab_user_home: "/home/{{ lab_user }}"
+
+docker_default_version: 20.10.12

@@ -1,0 +1,6 @@
+# local vagrant folder
+.vagrant
+
+
+# keys content
+**/keys/[!.]*

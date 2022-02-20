@@ -1,0 +1,7 @@
+
+# User env variables
+
+# Setup PATH
+
+# Tweak {{ lab_user }} prompt
+export PS1='\[\033[1;34m\]\u\[\033[0m\]@\[\033[1;34m\]\h\[\033[0m\]: \[\033[34m\]\W\[\033[0m\]\n\[\033[33m\]$?\[\033[0m\]@\[\033[0m\]\t\[\033[0m\] \$ '

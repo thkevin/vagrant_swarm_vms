@@ -1,0 +1,22 @@
+---
+
+- name: Initialize Swarm cluster
+  when:
+    - inventory_hostname == groups.managers[0]
+  block:
+    - name: Initialize Swarm cluster
+      community.docker.docker_swarm:
+        state: present
+        advertise_addr: "{{ adv_addr }}"
+      register: init_swarm
+
+    - name: Set join tokens var
+      set_fact:
+        join_tokens: "{{ init_swarm.swarm_facts.JoinTokens }}"
+
+- name: Add nodes
+  community.docker.docker_swarm:
+    state: join
+    advertise_addr: "{{ adv_addr }}"
+    join_token: "{{ hostvars[groups.managers[0]].join_tokens.Worker }}"
+    remote_addrs: "{{ adv_addr }}"

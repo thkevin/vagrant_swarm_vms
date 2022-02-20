@@ -1,0 +1,25 @@
+---
+
+- name: Create cluster
+  hosts: all
+
+  roles:
+    - name: Setup VMs
+      role: setup
+      tags:
+        - setup
+        - always
+
+    - name: Install packages
+      role: packages
+      tags:
+        - packages
+        - always
+
+    - name: Setup swarm cluster
+      role: swarm
+      vars:
+        - adv_addr : "{{ hostvars[groups.managers[0]].ansible_facts.eth1.ipv4.address }}"
+      tags:
+        - swarm
+        - never
